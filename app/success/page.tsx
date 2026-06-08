@@ -4,13 +4,20 @@ type SuccessPageProps = {
   }>;
 };
 
-async function verifyPayment(sessionId: string) {
+type VerificationResult = {
+  ok: boolean;
+  paymentStatus: string | null;
+  unlockReference: string | null;
+};
+
+async function verifyPayment(sessionId: string): Promise<VerificationResult> {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
 
   if (!siteUrl) {
     return {
       ok: false,
       paymentStatus: null,
+      unlockReference: null,
     };
   }
 
@@ -26,6 +33,7 @@ async function verifyPayment(sessionId: string) {
       return {
         ok: false,
         paymentStatus: null,
+        unlockReference: null,
       };
     }
 
@@ -34,11 +42,16 @@ async function verifyPayment(sessionId: string) {
     return {
       ok: Boolean(data.ok),
       paymentStatus: data.paymentStatus as string | null,
+      unlockReference:
+        typeof data.purchase?.unlockReference === "string"
+          ? data.purchase.unlockReference
+          : null,
     };
   } catch {
     return {
       ok: false,
       paymentStatus: null,
+      unlockReference: null,
     };
   }
 }
@@ -52,9 +65,11 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
     : {
         ok: false,
         paymentStatus: null,
+        unlockReference: null,
       };
 
   const isPaid = verification.ok && verification.paymentStatus === "paid";
+  const unlockReference = verification.unlockReference;
 
   return (
     <main className="min-h-screen bg-[#050816] px-6 py-10 text-white">
@@ -69,9 +84,26 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
 
         <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-300">
           {isPaid
-            ? "Your payment has been verified and recorded securely. Prediction unlock logic will be connected in a later safe step."
+            ? "Your payment has been verified and recorded securely. Keep your unlock reference safe for future access."
             : "Thanks for your purchase. We could not fully verify the payment status on this page yet, but your Stripe session has returned successfully."}
         </p>
+
+        {isPaid && unlockReference ? (
+          <div className="mt-8 w-full max-w-xl rounded-3xl border border-emerald-400/20 bg-white/5 p-6 shadow-2xl shadow-emerald-950/20">
+            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-emerald-200">
+              Unlock reference
+            </p>
+
+            <p className="mt-4 break-all rounded-2xl border border-white/10 bg-black/30 px-4 py-4 font-mono text-lg font-bold text-emerald-300">
+              {unlockReference}
+            </p>
+
+            <p className="mt-4 text-sm leading-6 text-zinc-400">
+              This reference proves your paid checkout was recorded. Future
+              prediction unlock logic will use this securely.
+            </p>
+          </div>
+        ) : null}
 
         <a
           href="https://profbint.com"
