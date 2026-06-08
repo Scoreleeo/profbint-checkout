@@ -1,7 +1,12 @@
+import { randomBytes } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@/app/generated/prisma/client";
 import Stripe from "stripe";
+
+function createUnlockReference() {
+  return `PFI_${randomBytes(16).toString("hex").toUpperCase()}`;
+}
 
 export async function POST(request: NextRequest) {
   const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
@@ -54,18 +59,30 @@ export async function POST(request: NextRequest) {
     if (event.type === "checkout.session.completed") {
       const session = event.data.object as Stripe.Checkout.Session;
 
-      await prisma.purchase.updateMany({
+      const existingPurchase = await prisma.purchase.findUnique({
         where: {
           stripeSessionId: session.id,
         },
-        data: {
-          stripePaymentId:
-            typeof session.payment_intent === "string"
-              ? session.payment_intent
-              : null,
-          status: session.payment_status === "paid" ? "PAID" : "COMPLETED",
-        },
       });
+
+      if (existingPurchase) {
+        await prisma.purchase.update({
+          where: {
+            stripeSessionId: session.id,
+          },
+          data: {
+            stripePaymentId:
+              typeof session.payment_intent === "string"
+                ? session.payment_intent
+                : existingPurchase.stripePaymentId,
+            status: session.payment_status === "paid" ? "PAID" : "COMPLETED",
+            unlockReference:
+              existingPurchase.unlockReference ?? createUnlockReference(),
+            unlockCreatedAt:
+              existingPurchase.unlockCreatedAt ?? new Date(),
+          },
+        });
+      }
     }
 
     await prisma.$disconnect();
