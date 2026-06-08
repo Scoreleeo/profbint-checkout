@@ -8,12 +8,14 @@ datasource db {
 }
 
 model Purchase {
-  id              String   @id @default(cuid())
-  stripeSessionId String   @unique
-  stripePaymentId String?
-  productName     String
-  amount          Int
-  currency        String   @default("gbp")
-  status          String
-  createdAt       DateTime @default(now())
+  id                String    @id @default(cuid())
+  stripeSessionId   String    @unique
+  stripePaymentId   String?
+  productName       String
+  amount            Int
+  currency          String    @default("gbp")
+  status            String
+  unlockReference   String?   @unique
+  unlockCreatedAt   DateTime?
+  createdAt         DateTime  @default(now())
 }
