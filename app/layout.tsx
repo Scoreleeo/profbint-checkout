@@ -104,19 +104,19 @@ export default function RootLayout({
               </a>
               <a
                 className="hover:text-emerald-300"
-                href="https://profbint.com/privacy-policy"
+                href="https://profbint.com/privacy"
               >
                 Privacy Policy
               </a>
               <a
                 className="hover:text-emerald-300"
-                href="https://profbint.com/terms-of-service"
+                href="https://profbint.com/terms"
               >
                 Terms of Service
               </a>
               <a
                 className="hover:text-emerald-300"
-                href="https://profbint.com/refund-policy"
+                href="https://profbint.com/refunds"
               >
                 Refund Policy
               </a>
@@ -128,7 +128,7 @@ export default function RootLayout({
               </a>
               <a
                 className="hover:text-emerald-300"
-                href="https://profbint.com/legal-disclaimer"
+                href="https://profbint.com/legal"
               >
                 Legal & Disclaimer
               </a>
