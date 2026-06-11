@@ -1,126 +1,163 @@
+const portalCards = [
+  {
+    title: "Start checkout",
+    href: "/test-checkout",
+    description: "Run the secure Stripe checkout flow for premium access.",
+    accent: "from-emerald-400 to-teal-300",
+    border: "border-emerald-400/25",
+    badge: "Payment",
+  },
+  {
+    title: "Unlock lookup",
+    href: "/unlock",
+    description: "Quickly check whether a PFI unlock reference is valid.",
+    accent: "from-blue-400 to-cyan-300",
+    border: "border-blue-400/25",
+    badge: "Validate",
+  },
+  {
+    title: "Purchase details",
+    href: "/purchase",
+    description: "View product, amount, status, and purchase timestamps.",
+    accent: "from-orange-400 to-amber-300",
+    border: "border-orange-400/25",
+    badge: "Receipt",
+  },
+  {
+    title: "Unlock history",
+    href: "/unlock-history",
+    description: "Review the full unlock timeline and verification status.",
+    accent: "from-fuchsia-400 to-purple-300",
+    border: "border-fuchsia-400/25",
+    badge: "History",
+  },
+];
+
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#050816] text-white">
-      <section className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-6 py-8 sm:px-10 lg:px-12">
-        <header className="flex items-center justify-between">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-emerald-300">
-              Pro Football Intel
-            </p>
-            <h1 className="mt-2 text-xl font-bold tracking-tight text-white">
-              Secure Checkout
-            </h1>
-          </div>
-
-          <div className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-zinc-300">
-            2026/27 Season Ready
-          </div>
-        </header>
-
-        <div className="grid flex-1 items-center gap-12 py-16 lg:grid-cols-[1.1fr_0.9fr]">
+    <main className="min-h-screen px-6 py-10 text-white">
+      <section className="mx-auto flex min-h-[calc(100vh-180px)] w-full max-w-7xl flex-col">
+        <div className="grid flex-1 items-center gap-10 py-10 lg:grid-cols-[1.05fr_0.95fr]">
           <section>
-            <div className="inline-flex rounded-full border border-emerald-400/20 bg-emerald-400/10 px-4 py-2 text-sm font-medium text-emerald-200">
-              Premium prediction access
+            <div className="inline-flex rounded-full border border-orange-400/25 bg-orange-400/10 px-4 py-2 text-sm font-black text-orange-200 shadow-lg shadow-orange-950/20">
+              2026/27 Season Checkout Portal
             </div>
 
-            <h2 className="mt-8 max-w-3xl text-4xl font-black tracking-tight text-white sm:text-5xl lg:text-6xl">
-              Unlock football predictions with a clean, secure payment flow.
-            </h2>
+            <h1 className="mt-8 max-w-4xl text-5xl font-black tracking-tight text-white sm:text-6xl lg:text-7xl">
+              Payments, unlocks and purchase verification in one secure hub.
+            </h1>
 
             <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-300">
-              This checkout area is being prepared for Pro Football Intel locked
-              predictions. Payment will be handled here separately from the main
-              prediction site, keeping the public app stable and focused.
+              The Pro Football Intel checkout portal handles premium prediction
+              payments, secure unlock references, receipt lookup, and customer
+              purchase verification separately from the main prediction app.
             </p>
 
-            <div className="mt-10 grid gap-4 sm:grid-cols-3">
-              <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-5">
-                <p className="text-2xl font-bold text-white">1</p>
-                <p className="mt-2 text-sm text-zinc-300">
-                  Choose a locked prediction on profbint.com.
-                </p>
-              </div>
+            <div className="mt-10 flex flex-col gap-4 sm:flex-row">
+              <a
+                href="/test-checkout"
+                className="rounded-full bg-emerald-400 px-7 py-4 text-sm font-black text-black shadow-xl shadow-emerald-950/30 transition hover:bg-emerald-300"
+              >
+                Start test checkout
+              </a>
 
-              <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-5">
-                <p className="text-2xl font-bold text-white">2</p>
-                <p className="mt-2 text-sm text-zinc-300">
-                  Complete secure checkout here.
-                </p>
-              </div>
-
-              <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-5">
-                <p className="text-2xl font-bold text-white">3</p>
-                <p className="mt-2 text-sm text-zinc-300">
-                  Return and unlock the prediction.
-                </p>
-              </div>
+              <a
+                href="/unlock"
+                className="rounded-full border border-blue-400/30 bg-blue-400/10 px-7 py-4 text-sm font-black text-blue-100 transition hover:bg-blue-400/20"
+              >
+                Check unlock reference
+              </a>
             </div>
 
-            <div className="mt-10 rounded-2xl border border-yellow-400/20 bg-yellow-400/10 p-5 text-sm leading-6 text-yellow-100">
-              Stripe checkout is not active yet. This page is Phase 1 only:
-              branding, structure, and checkout foundation.
+            <div className="mt-10 grid gap-4 sm:grid-cols-3">
+              <div className="rounded-3xl border border-emerald-400/20 bg-emerald-400/10 p-5">
+                <p className="text-3xl font-black text-emerald-300">01</p>
+                <p className="mt-3 font-bold text-white">Pay securely</p>
+                <p className="mt-2 text-sm leading-6 text-zinc-400">
+                  Stripe handles checkout while purchase data is saved safely.
+                </p>
+              </div>
+
+              <div className="rounded-3xl border border-orange-400/20 bg-orange-400/10 p-5">
+                <p className="text-3xl font-black text-orange-300">02</p>
+                <p className="mt-3 font-bold text-white">Receive unlock</p>
+                <p className="mt-2 text-sm leading-6 text-zinc-400">
+                  A secure PFI reference is generated after confirmed payment.
+                </p>
+              </div>
+
+              <div className="rounded-3xl border border-blue-400/20 bg-blue-400/10 p-5">
+                <p className="text-3xl font-black text-blue-300">03</p>
+                <p className="mt-3 font-bold text-white">Verify anytime</p>
+                <p className="mt-2 text-sm leading-6 text-zinc-400">
+                  Customers can look up purchases and unlock history anytime.
+                </p>
+              </div>
             </div>
           </section>
 
-          <aside className="rounded-3xl border border-white/10 bg-white/[0.06] p-6 shadow-2xl shadow-emerald-950/20 backdrop-blur">
-            <div className="rounded-2xl bg-[#07111f] p-6">
-              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-zinc-400">
-                Checkout preview
-              </p>
-
-              <div className="mt-8 rounded-2xl border border-white/10 bg-white/[0.04] p-5">
-                <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <p className="font-semibold text-white">
-                      Locked Match Prediction
-                    </p>
-                    <p className="mt-1 text-sm text-zinc-400">
-                      Premium football intelligence
-                    </p>
-                  </div>
-
-                  <div className="rounded-full bg-emerald-400/10 px-3 py-1 text-sm font-semibold text-emerald-300">
-                    Secure
-                  </div>
-                </div>
-
-                <div className="mt-6 space-y-3 text-sm text-zinc-300">
-                  <div className="flex justify-between">
-                    <span>Prediction access</span>
-                    <span>Coming soon</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Payment provider</span>
-                    <span>Stripe later</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Status</span>
-                    <span>Foundation ready</span>
-                  </div>
-                </div>
-
-                <div className="mt-6 h-px bg-white/10" />
-
-                <button
-                  type="button"
-                  disabled
-                  className="mt-6 w-full cursor-not-allowed rounded-full bg-zinc-700 px-5 py-4 text-sm font-bold text-zinc-300"
-                >
-                  Checkout coming soon
-                </button>
+          <aside className="rounded-[2rem] border border-white/10 bg-slate-950/60 p-6 shadow-2xl shadow-black/30 backdrop-blur">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-sm font-black uppercase tracking-[0.3em] text-emerald-200">
+                  Customer portal
+                </p>
+                <h2 className="mt-2 text-2xl font-black text-white">
+                  Checkout dashboard
+                </h2>
               </div>
 
-              <p className="mt-6 text-sm leading-6 text-zinc-400">
-                Real payment buttons, success pages, cancel pages, and unlock
-                verification will be added later in small safe steps.
+              <div className="rounded-full border border-emerald-400/25 bg-emerald-400/10 px-4 py-2 text-sm font-black text-emerald-200">
+                Live
+              </div>
+            </div>
+
+            <div className="mt-6 grid gap-4">
+              {portalCards.map((card) => (
+                <a
+                  key={card.href}
+                  href={card.href}
+                  className={`group rounded-3xl border ${card.border} bg-white/[0.045] p-5 transition hover:-translate-y-1 hover:bg-white/[0.075]`}
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <div
+                        className={`inline-flex rounded-full bg-gradient-to-r ${card.accent} px-3 py-1 text-xs font-black text-black`}
+                      >
+                        {card.badge}
+                      </div>
+
+                      <h3 className="mt-4 text-xl font-black text-white">
+                        {card.title}
+                      </h3>
+
+                      <p className="mt-2 text-sm leading-6 text-zinc-400">
+                        {card.description}
+                      </p>
+                    </div>
+
+                    <span className="text-2xl text-zinc-500 transition group-hover:text-white">
+                      →
+                    </span>
+                  </div>
+                </a>
+              ))}
+            </div>
+
+            <div className="mt-6 rounded-3xl border border-white/10 bg-black/25 p-5">
+              <p className="font-black text-white">Support</p>
+              <p className="mt-2 text-sm leading-6 text-zinc-400">
+                Need help with a payment or unlock reference?
               </p>
+              <a
+                href="mailto:support@profbint.com"
+                className="mt-3 inline-flex text-sm font-black text-emerald-300 hover:text-emerald-200"
+              >
+                support@profbint.com
+              </a>
             </div>
           </aside>
         </div>
-
-        <footer className="border-t border-white/10 py-6 text-sm text-zinc-500">
-          © 2026 Pro Football Intel. Checkout app foundation.
-        </footer>
       </section>
     </main>
   );
