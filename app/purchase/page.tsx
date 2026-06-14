@@ -11,6 +11,9 @@ type PurchaseDetails = {
   unlockReference: string;
   unlockCreatedAt: string;
   purchaseCreatedAt: string;
+  fixtureId?: string | null;
+  matchName?: string | null;
+  returnUrl?: string | null;
 };
 
 type DetailsResult = {
