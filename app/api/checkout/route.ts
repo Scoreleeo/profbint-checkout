@@ -3,7 +3,23 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@/app/generated/prisma/client";
 import Stripe from "stripe";
 
-export async function POST() {
+type CheckoutRequestBody = {
+  fixtureId?: string;
+  matchName?: string;
+  returnUrl?: string;
+};
+
+function cleanMetadataValue(value: unknown) {
+  if (typeof value !== "string") return null;
+
+  const trimmed = value.trim();
+
+  if (!trimmed) return null;
+
+  return trimmed.slice(0, 500);
+}
+
+export async function POST(request: Request) {
   const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
   const stripePriceId = process.env.STRIPE_PRICE_ID;
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
@@ -22,6 +38,18 @@ export async function POST() {
       { status: 500 },
     );
   }
+
+  let body: CheckoutRequestBody = {};
+
+  try {
+    body = (await request.json()) as CheckoutRequestBody;
+  } catch {
+    body = {};
+  }
+
+  const fixtureId = cleanMetadataValue(body.fixtureId);
+  const matchName = cleanMetadataValue(body.matchName);
+  const returnUrl = cleanMetadataValue(body.returnUrl);
 
   const stripe = new Stripe(stripeSecretKey);
 
@@ -45,6 +73,9 @@ export async function POST() {
       metadata: {
         product: "pro_football_intel_prediction",
         public_app_url: publicAppUrl,
+        fixtureId: fixtureId ?? "",
+        matchName: matchName ?? "",
+        returnUrl: returnUrl ?? "",
       },
     });
 
@@ -68,6 +99,9 @@ export async function POST() {
         amount: session.amount_total ?? 399,
         currency: session.currency ?? "gbp",
         status: "CHECKOUT_CREATED",
+        fixtureId,
+        matchName,
+        returnUrl,
       },
     });
 
