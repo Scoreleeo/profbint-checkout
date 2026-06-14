@@ -8,6 +8,16 @@ function createUnlockReference() {
   return `PFI_${randomBytes(16).toString("hex").toUpperCase()}`;
 }
 
+function cleanMetadataValue(value: unknown) {
+  if (typeof value !== "string") return null;
+
+  const trimmed = value.trim();
+
+  if (!trimmed) return null;
+
+  return trimmed.slice(0, 500);
+}
+
 export async function POST(request: NextRequest) {
   const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
   const stripeWebhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -80,6 +90,15 @@ export async function POST(request: NextRequest) {
               existingPurchase.unlockReference ?? createUnlockReference(),
             unlockCreatedAt:
               existingPurchase.unlockCreatedAt ?? new Date(),
+            fixtureId:
+              existingPurchase.fixtureId ??
+              cleanMetadataValue(session.metadata?.fixtureId),
+            matchName:
+              existingPurchase.matchName ??
+              cleanMetadataValue(session.metadata?.matchName),
+            returnUrl:
+              existingPurchase.returnUrl ??
+              cleanMetadataValue(session.metadata?.returnUrl),
           },
         });
       }
