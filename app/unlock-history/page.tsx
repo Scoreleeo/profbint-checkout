@@ -11,6 +11,9 @@ type PurchaseDetails = {
   unlockReference: string;
   unlockCreatedAt: string;
   purchaseCreatedAt: string;
+  fixtureId?: string | null;
+  matchName?: string | null;
+  returnUrl?: string | null;
 };
 
 type DetailsResult = {
@@ -166,7 +169,9 @@ export default function UnlockHistoryPage() {
             </form>
 
             <div className="mt-6 rounded-3xl border border-orange-400/20 bg-orange-400/10 p-5">
-              <p className="font-black text-orange-200">Football checkout timeline</p>
+              <p className="font-black text-orange-200">
+                Football checkout timeline
+              </p>
               <p className="mt-2 text-sm leading-6 text-zinc-300">
                 This view helps confirm when your premium prediction purchase
                 was created, paid, and unlocked.
@@ -241,6 +246,15 @@ export default function UnlockHistoryPage() {
                     </p>
                   </div>
 
+                  {purchase.matchName ? (
+                    <div className="rounded-2xl border border-cyan-400/20 bg-cyan-400/10 p-4">
+                      <p className="text-xs text-zinc-500">Match</p>
+                      <p className="mt-1 font-black text-white">
+                        {purchase.matchName}
+                      </p>
+                    </div>
+                  ) : null}
+
                   <div className="rounded-2xl border border-white/10 bg-black/25 p-4">
                     <p className="text-xs text-zinc-500">Amount</p>
                     <p className="mt-1 font-black text-white">
@@ -296,7 +310,9 @@ export default function UnlockHistoryPage() {
 
                 <div className="rounded-3xl border border-blue-400/20 bg-blue-400/10 p-5">
                   <p className="text-3xl font-black text-blue-300">02</p>
-                  <p className="mt-2 font-bold text-white">Payment confirmed</p>
+                  <p className="mt-2 font-bold text-white">
+                    Payment confirmed
+                  </p>
                   <p className="mt-1 text-sm text-zinc-400">
                     Stripe confirms the payment through the checkout system.
                   </p>
