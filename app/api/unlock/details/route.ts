@@ -73,6 +73,9 @@ export async function GET(request: NextRequest) {
         unlockReference: purchase.unlockReference,
         unlockCreatedAt: purchase.unlockCreatedAt,
         purchaseCreatedAt: purchase.createdAt,
+        fixtureId: purchase.fixtureId,
+        matchName: purchase.matchName,
+        returnUrl: purchase.returnUrl,
       },
     });
   } catch (error) {
