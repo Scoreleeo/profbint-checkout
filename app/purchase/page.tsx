@@ -175,6 +175,14 @@ export default function PurchaseDetailsPage() {
                       {formatProductName(purchase.productName)}
                     </p>
                   </div>
+                  {purchase.matchName ? (
+  <div className="rounded-2xl border border-cyan-400/20 bg-cyan-400/10 p-4 sm:col-span-2">
+    <p className="text-xs text-zinc-500">Match</p>
+    <p className="mt-1 font-black text-white">
+      {purchase.matchName}
+    </p>
+  </div>
+) : null}
 
                   <div className="rounded-2xl border border-fuchsia-400/20 bg-fuchsia-400/10 p-4">
                     <p className="text-xs text-zinc-500">Purchase created</p>
