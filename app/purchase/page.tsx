@@ -175,14 +175,15 @@ export default function PurchaseDetailsPage() {
                       {formatProductName(purchase.productName)}
                     </p>
                   </div>
+
                   {purchase.matchName ? (
-  <div className="rounded-2xl border border-cyan-400/20 bg-cyan-400/10 p-4 sm:col-span-2">
-    <p className="text-xs text-zinc-500">Match</p>
-    <p className="mt-1 font-black text-white">
-      {purchase.matchName}
-    </p>
-  </div>
-) : null}
+                    <div className="rounded-2xl border border-cyan-400/20 bg-cyan-400/10 p-4 sm:col-span-2">
+                      <p className="text-xs text-zinc-500">Match</p>
+                      <p className="mt-1 font-black text-white">
+                        {purchase.matchName}
+                      </p>
+                    </div>
+                  ) : null}
 
                   <div className="rounded-2xl border border-fuchsia-400/20 bg-fuchsia-400/10 p-4">
                     <p className="text-xs text-zinc-500">Purchase created</p>
@@ -198,6 +199,15 @@ export default function PurchaseDetailsPage() {
                     </p>
                   </div>
                 </div>
+
+                {purchase.returnUrl ? (
+                  <a
+                    href={purchase.returnUrl}
+                    className="mt-6 block rounded-full bg-emerald-400 px-6 py-4 text-center text-sm font-black text-black transition hover:bg-emerald-300"
+                  >
+                    Return to Match
+                  </a>
+                ) : null}
 
                 <div className="mt-6 rounded-3xl border border-emerald-400/20 bg-emerald-400/10 p-5">
                   <p className="font-black text-emerald-200">
