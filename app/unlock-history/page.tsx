@@ -277,6 +277,15 @@ export default function UnlockHistoryPage() {
                   </div>
                 </div>
 
+                {purchase.returnUrl ? (
+                  <a
+                    href={purchase.returnUrl}
+                    className="mt-6 block rounded-full bg-emerald-400 px-6 py-4 text-center text-sm font-black text-black transition hover:bg-emerald-300"
+                  >
+                    Return to Match
+                  </a>
+                ) : null}
+
                 <div className="mt-6 rounded-3xl border border-emerald-400/20 bg-emerald-400/10 p-5">
                   <p className="font-black text-emerald-200">
                     Verification complete
