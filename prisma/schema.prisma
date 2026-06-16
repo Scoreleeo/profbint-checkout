@@ -8,17 +8,34 @@ datasource db {
 }
 
 model Purchase {
-  id                String    @id @default(cuid())
-  stripeSessionId   String    @unique
+  id                String         @id @default(cuid())
+  stripeSessionId   String         @unique
   stripePaymentId   String?
   productName       String
   amount            Int
-  currency          String    @default("gbp")
+  currency          String         @default("gbp")
   status            String
-  unlockReference   String?   @unique
+  unlockReference   String?        @unique
   unlockCreatedAt   DateTime?
   fixtureId         String?
   matchName         String?
   returnUrl         String?
-  createdAt         DateTime  @default(now())
+  createdAt         DateTime       @default(now())
+
+  items             PurchaseItem[]
+}
+
+model PurchaseItem {
+  id          String   @id @default(cuid())
+  purchaseId  String
+  fixtureId   String
+  matchName   String
+  returnUrl   String
+  price        Int
+  createdAt   DateTime @default(now())
+
+  purchase    Purchase @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+
+  @@unique([purchaseId, fixtureId])
+  @@index([fixtureId])
 }
