@@ -40,6 +40,9 @@ export async function GET(request: NextRequest) {
       where: {
         unlockReference: cleanedReference,
       },
+      include: {
+        items: true,
+      },
     });
 
     await prisma.$disconnect();
@@ -76,6 +79,12 @@ export async function GET(request: NextRequest) {
         fixtureId: purchase.fixtureId,
         matchName: purchase.matchName,
         returnUrl: purchase.returnUrl,
+        items: purchase.items.map((item) => ({
+          fixtureId: item.fixtureId,
+          matchName: item.matchName,
+          returnUrl: item.returnUrl,
+          price: item.price,
+        })),
       },
     });
   } catch (error) {
