@@ -2,6 +2,13 @@
 
 import { FormEvent, useMemo, useState } from "react";
 
+type PurchaseItem = {
+  fixtureId: string;
+  matchName: string;
+  returnUrl: string;
+  price: number;
+};
+
 type PurchaseDetails = {
   id: string;
   productName: string;
@@ -14,6 +21,7 @@ type PurchaseDetails = {
   fixtureId?: string | null;
   matchName?: string | null;
   returnUrl?: string | null;
+  items?: PurchaseItem[];
 };
 
 type DetailsResult = {
@@ -27,9 +35,15 @@ type DetailsResult = {
 
 function formatProductName(productName?: string) {
   if (!productName) return "Pro Football Intel Premium Prediction";
+
   if (productName === "pro_football_intel_prediction") {
     return "Pro Football Intel Premium Prediction";
   }
+
+  if (productName === "pro_football_intel_basket") {
+    return "Pro Football Intel Basket";
+  }
+
   return productName;
 }
 
@@ -87,6 +101,8 @@ export default function UnlockHistoryPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   const purchase = result?.purchase;
+  const basketItems = purchase?.items ?? [];
+  const hasBasketItems = basketItems.length > 0;
 
   const referenceAge = useMemo(() => {
     return getReferenceAge(purchase?.unlockCreatedAt);
@@ -238,6 +254,47 @@ export default function UnlockHistoryPage() {
                   </div>
                 </div>
 
+                {hasBasketItems ? (
+                  <div className="mt-6 rounded-3xl border border-cyan-400/20 bg-cyan-400/10 p-5">
+                    <p className="text-sm font-black uppercase tracking-[0.25em] text-cyan-200">
+                      Basket matches
+                    </p>
+
+                    <div className="mt-5 grid gap-4">
+                      {basketItems.map((item) => (
+                        <div
+                          key={item.fixtureId}
+                          className="rounded-2xl border border-white/10 bg-black/25 p-4"
+                        >
+                          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                            <div>
+                              <p className="font-black text-white">
+                                {item.matchName}
+                              </p>
+                              <p className="mt-2 break-all font-mono text-xs font-bold text-zinc-500">
+                                Fixture ID: {item.fixtureId}
+                              </p>
+                            </div>
+
+                            <div className="flex flex-col gap-3 sm:items-end">
+                              <p className="font-black text-emerald-300">
+                                {formatAmount(item.price, purchase.currency)}
+                              </p>
+
+                              <a
+                                href={item.returnUrl}
+                                className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-4 py-2 text-xs font-black text-emerald-100 transition hover:bg-emerald-400/20"
+                              >
+                                Return to Match
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
+
                 <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                   <div className="rounded-2xl border border-white/10 bg-black/25 p-4">
                     <p className="text-xs text-zinc-500">Product</p>
@@ -246,7 +303,7 @@ export default function UnlockHistoryPage() {
                     </p>
                   </div>
 
-                  {purchase.matchName ? (
+                  {!hasBasketItems && purchase.matchName ? (
                     <div className="rounded-2xl border border-cyan-400/20 bg-cyan-400/10 p-4">
                       <p className="text-xs text-zinc-500">Match</p>
                       <p className="mt-1 font-black text-white">
@@ -277,7 +334,7 @@ export default function UnlockHistoryPage() {
                   </div>
                 </div>
 
-                {purchase.returnUrl ? (
+                {!hasBasketItems && purchase.returnUrl ? (
                   <a
                     href={purchase.returnUrl}
                     className="mt-6 block rounded-full bg-emerald-400 px-6 py-4 text-center text-sm font-black text-black transition hover:bg-emerald-300"
