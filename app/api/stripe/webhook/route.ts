@@ -73,9 +73,18 @@ export async function POST(request: NextRequest) {
         where: {
           stripeSessionId: session.id,
         },
+        include: {
+          items: true,
+        },
       });
 
       if (existingPurchase) {
+        const unlockReference =
+          existingPurchase.unlockReference ?? createUnlockReference();
+
+        const unlockCreatedAt =
+          existingPurchase.unlockCreatedAt ?? new Date();
+
         await prisma.purchase.update({
           where: {
             stripeSessionId: session.id,
@@ -86,10 +95,8 @@ export async function POST(request: NextRequest) {
                 ? session.payment_intent
                 : existingPurchase.stripePaymentId,
             status: session.payment_status === "paid" ? "PAID" : "COMPLETED",
-            unlockReference:
-              existingPurchase.unlockReference ?? createUnlockReference(),
-            unlockCreatedAt:
-              existingPurchase.unlockCreatedAt ?? new Date(),
+            unlockReference,
+            unlockCreatedAt,
             fixtureId:
               existingPurchase.fixtureId ??
               cleanMetadataValue(session.metadata?.fixtureId),
