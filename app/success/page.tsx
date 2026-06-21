@@ -4,6 +4,12 @@ type SuccessPageProps = {
   }>;
 };
 
+type PurchaseItem = {
+  fixtureId: string | null;
+  matchName: string | null;
+  returnUrl: string | null;
+};
+
 type VerificationResult = {
   ok: boolean;
   paymentStatus: string | null;
@@ -13,7 +19,20 @@ type VerificationResult = {
   currency: string | null;
   purchaseCreatedAt: string | null;
   unlockCreatedAt: string | null;
+  items: PurchaseItem[];
 };
+
+function formatProductName(productName: string | null) {
+  if (productName === "pro_football_intel_basket") {
+    return "Pro Football Intel Basket";
+  }
+
+  if (productName === "pro_football_intel_prediction") {
+    return "Pro Football Intel Prediction";
+  }
+
+  return productName ?? "Pro Football Intel Prediction";
+}
 
 function formatAmount(amount: number | null, currency: string | null) {
   if (typeof amount !== "number") return "Not available";
@@ -33,20 +52,37 @@ function formatDate(value: string | null) {
   }).format(new Date(value));
 }
 
+function buildUnlockedPredictionUrl(item: PurchaseItem, unlockReference: string) {
+  if (item.returnUrl) {
+    const url = new URL(item.returnUrl);
+    url.searchParams.set("ref", unlockReference);
+    return url.toString();
+  }
+
+  return `https://profbint.com/predictions/${item.fixtureId}?ref=${encodeURIComponent(
+    unlockReference,
+  )}`;
+}
+
+function emptyVerification(): VerificationResult {
+  return {
+    ok: false,
+    paymentStatus: null,
+    unlockReference: null,
+    productName: null,
+    amount: null,
+    currency: null,
+    purchaseCreatedAt: null,
+    unlockCreatedAt: null,
+    items: [],
+  };
+}
+
 async function verifyPayment(sessionId: string): Promise<VerificationResult> {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
 
   if (!siteUrl) {
-    return {
-      ok: false,
-      paymentStatus: null,
-      unlockReference: null,
-      productName: null,
-      amount: null,
-      currency: null,
-      purchaseCreatedAt: null,
-      unlockCreatedAt: null,
-    };
+    return emptyVerification();
   }
 
   try {
@@ -58,16 +94,7 @@ async function verifyPayment(sessionId: string): Promise<VerificationResult> {
     );
 
     if (!response.ok) {
-      return {
-        ok: false,
-        paymentStatus: null,
-        unlockReference: null,
-        productName: null,
-        amount: null,
-        currency: null,
-        purchaseCreatedAt: null,
-        unlockCreatedAt: null,
-      };
+      return emptyVerification();
     }
 
     const data = await response.json();
@@ -75,7 +102,8 @@ async function verifyPayment(sessionId: string): Promise<VerificationResult> {
 
     return {
       ok: Boolean(data.ok),
-      paymentStatus: data.paymentStatus as string | null,
+      paymentStatus:
+        typeof data.paymentStatus === "string" ? data.paymentStatus : null,
       unlockReference:
         typeof purchase?.unlockReference === "string"
           ? purchase.unlockReference
@@ -90,18 +118,19 @@ async function verifyPayment(sessionId: string): Promise<VerificationResult> {
         typeof purchase?.unlockCreatedAt === "string"
           ? purchase.unlockCreatedAt
           : null,
+      items: Array.isArray(purchase?.items)
+        ? purchase.items.map((item: any) => ({
+            fixtureId:
+              typeof item?.fixtureId === "string" ? item.fixtureId : null,
+            matchName:
+              typeof item?.matchName === "string" ? item.matchName : null,
+            returnUrl:
+              typeof item?.returnUrl === "string" ? item.returnUrl : null,
+          }))
+        : [],
     };
   } catch {
-    return {
-      ok: false,
-      paymentStatus: null,
-      unlockReference: null,
-      productName: null,
-      amount: null,
-      currency: null,
-      purchaseCreatedAt: null,
-      unlockCreatedAt: null,
-    };
+    return emptyVerification();
   }
 }
 
@@ -111,18 +140,13 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
 
   const verification = sessionId
     ? await verifyPayment(sessionId)
-    : {
-        ok: false,
-        paymentStatus: null,
-        unlockReference: null,
-        productName: null,
-        amount: null,
-        currency: null,
-        purchaseCreatedAt: null,
-        unlockCreatedAt: null,
-      };
+    : emptyVerification();
 
   const isPaid = verification.ok && verification.paymentStatus === "paid";
+  const unlockReference = verification.unlockReference;
+  const hasUnlockReference = typeof unlockReference === "string";
+  const hasPurchasedMatches =
+    isPaid && hasUnlockReference && verification.items.length > 0;
 
   return (
     <main className="min-h-screen px-6 py-10 text-white">
@@ -141,7 +165,7 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
             : "Thanks for your purchase. Your Stripe session returned successfully, but the payment status could not be fully verified on this page."}
         </p>
 
-        {isPaid && verification.unlockReference ? (
+        {isPaid && hasUnlockReference ? (
           <div className="mt-10 grid w-full gap-6 lg:grid-cols-[1.2fr_0.8fr]">
             <div className="rounded-[2rem] border border-emerald-400/20 bg-slate-950/60 p-6 text-left shadow-2xl shadow-emerald-950/20 backdrop-blur">
               <p className="text-sm font-black uppercase tracking-[0.35em] text-emerald-200">
@@ -149,7 +173,7 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
               </p>
 
               <p className="mt-5 break-all rounded-2xl border border-emerald-400/20 bg-black/40 px-5 py-5 font-mono text-lg font-black text-emerald-300">
-                {verification.unlockReference}
+                {unlockReference}
               </p>
 
               <div className="mt-6 grid gap-3 sm:grid-cols-3">
@@ -169,11 +193,50 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
                 </div>
               </div>
 
-              <p className="mt-6 text-sm leading-6 text-zinc-400">
-                Keep this reference safe. You can use it on the checkout portal
-                to validate your purchase, view purchase details, and review
-                unlock history.
-              </p>
+              {hasPurchasedMatches ? (
+                <div className="mt-6 rounded-3xl border border-emerald-400/20 bg-emerald-400/10 p-5">
+                  <p className="font-black text-emerald-200">
+                    Your purchased predictions
+                  </p>
+
+                  <div className="mt-4 grid gap-3">
+                    {verification.items.map((item) => (
+                      <div
+                        key={`${item.fixtureId}-${item.matchName}`}
+                        className="rounded-2xl border border-white/10 bg-black/25 p-4"
+                      >
+                        <p className="font-black text-white">
+                          {item.matchName ?? "Purchased prediction"}
+                        </p>
+
+                        {item.fixtureId ? (
+                          <p className="mt-1 font-mono text-xs font-bold text-zinc-500">
+                            Fixture ID: {item.fixtureId}
+                          </p>
+                        ) : null}
+
+                        {item.fixtureId ? (
+                          <a
+                            href={buildUnlockedPredictionUrl(
+                              item,
+                              unlockReference,
+                            )}
+                            className="mt-4 block rounded-full bg-emerald-400 px-5 py-3 text-center text-sm font-black text-black transition hover:bg-emerald-300"
+                          >
+                            View Prediction
+                          </a>
+                        ) : null}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <p className="mt-6 text-sm leading-6 text-zinc-400">
+                  Keep this reference safe. You can use it on the checkout
+                  portal to validate your purchase, view purchase details, and
+                  review unlock history.
+                </p>
+              )}
             </div>
 
             <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6 text-left shadow-2xl shadow-black/20 backdrop-blur">
@@ -185,7 +248,7 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
                 <div className="flex justify-between gap-4 border-b border-white/10 pb-3">
                   <span className="text-zinc-500">Product</span>
                   <span className="text-right font-bold text-white">
-                    {verification.productName ?? "Pro Football Intel Prediction"}
+                    {formatProductName(verification.productName)}
                   </span>
                 </div>
 
