@@ -37,6 +37,9 @@ export async function GET(request: NextRequest) {
       where: {
         stripeSessionId: session.id,
       },
+      include: {
+        items: true,
+      },
     });
 
     if (!purchase) {
@@ -58,6 +61,9 @@ export async function GET(request: NextRequest) {
             ? session.payment_intent
             : purchase.stripePaymentId,
         status: session.payment_status === "paid" ? "PAID" : purchase.status,
+      },
+      include: {
+        items: true,
       },
     });
 
